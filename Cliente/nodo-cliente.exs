@@ -1,184 +1,54 @@
 defmodule NodoCliente do
   @nombre_servicio_local :servicio_respuesta
-  @servicio_local {@nombre_servicio_local, :nodocliente@cliente}
   @nodo_remoto :"nodoservidor@schwarz"
-  @servicio_remoto {:"", @nodo_remoto}
-  @autores [
-    %{
-      cedula: "1002456789",
-      nombre: "Laura",
-      apellidos: "Rojas Gómez",
-      programa: "Ingeniería de Sistemas",
-      titulo: "Ingeniera de Sistemas"
-    },
-    %{
-      cedula: "1003567890",
-      nombre: "Andrés",
-      apellidos: "Morales Pérez",
-      programa: "Ingeniería de Sistemas",
-      titulo: "Ingeniero de Sistemas"
-    },
-    %{
-      cedula: "1004678901",
-      nombre: "Camila",
-      apellidos: "Torres López",
-      programa: "Ingeniería Electrónica",
-      titulo: "Ingeniera Electrónica"
-    },
-    %{
-      cedula: "1005789012",
-      nombre: "Juan",
-      apellidos: "Herrera Ramírez",
-      programa: "Ingeniería de Software",
-      titulo: "Ingeniero de Software"
-    },
-    %{
-      cedula: "1006890123",
-      nombre: "Valentina",
-      apellidos: "Castaño Gil",
-      programa: "Ingeniería de Sistemas",
-      titulo: "Ingeniera de Sistemas"
-    },
-    %{
-      cedula: "1007901234",
-      nombre: "Carlos",
-      apellidos: "Nieto Salazar",
-      programa: "Ingeniería Electrónica",
-      titulo: "Ingeniero Electrónico"
-    },
-    %{
-      cedula: "1008123456",
-      nombre: "Nelson",
-      apellidos: "Gonzalez Londoño",
-      programa: "Ingeniería de Software",
-      titulo: "Ingeniero de Software"
-    },
-    %{
-      cedula: "1009345678",
-      nombre: "Felipe",
-      apellidos: "Orozco Téllez",
-      programa: "Ingeniería de Sistemas",
-      titulo: "Ingeniero de Sistemas"
-    },
-    %{
-      cedula: "1010456789",
-      nombre: "Daiana",
-      apellidos: "Flores Ruiz",
-      programa: "Ingeniería de Sistemas",
-      titulo: "Ingeniera de Sistemas"
-    },
-    %{
-      cedula: "1011567890",
-      nombre: "Santiago",
-      apellidos: "Ramos Silva",
-      programa: "Ingeniería Electrónica",
-      titulo: "Ingeniero Electrónico"
-    }
-  ]
-  @trabajos [
-    %{
-      fecha: "2024-11-25",
-      titulo: "Desarrollo de un sistema distribuido para la gestión de taxis urbanos en Elixir",
-      descripcion: "Implementa un sistema multijugador concurrente para la gestión de una flota de taxis en Elixir, aplicando procesos, GenServers y supervisores dinámicos.",
-      autores: ["1002456789", "1003567890"]
-    },
-    %{
-      fecha: "2024-12-01",
-      titulo: "Sistema de monitoreo energético basado en IoT para campus universitarios",
-      descripcion: "Diseña una red de sensores IoT para monitorear el consumo energético en tiempo real, optimizando recursos mediante un servidor central.",
-      autores: ["1004678901", "1007901234"]
-    },
-    %{
-      fecha: "2025-01-15",
-      titulo: "Aplicación móvil para la gestión de billeteras virtuales seguras",
-      descripcion: "Permite realizar transacciones seguras y registrar historiales de usuario, con categorías personalizadas y validación de operaciones.",
-      autores: ["1005789012", "1006890123"]
-    },
-    %{
-      fecha: "2025-02-05",
-      titulo: "Plataforma educativa gamificada para el aprendizaje de programación funcional",
-      descripcion: "Combina desafíos y recompensas para enseñar Elixir y Haskell usando procesos concurrentes y visualización de actores.",
-      autores: ["1011567890", "1010456789"]
-    },
-    %{
-      fecha: "2025-02-25",
-      titulo: "Análisis predictivo de tráfico urbano mediante aprendizaje automático",
-      descripcion: "Aplica modelos de regresión y redes neuronales para predecir la congestión vehicular en tiempo real.",
-      autores: ["1009345678", "1003567890", "1004678901"]
-    },
-    %{
-      fecha: "2025-03-10",
-      titulo: "Sistema de gestión de reservas hoteleras con JavaFX y arquitectura MVC",
-      descripcion: "Permite registrar habitaciones, clientes y reservas aplicando principios de arquitectura limpia en JavaFX.",
-      autores: ["1005789012", "1008123456"]
-    },
-    %{
-      fecha: "2025-04-12",
-      titulo: "Simulador de ciberataques para entrenamiento en seguridad informática",
-      descripcion: "Implementa un entorno controlado para practicar defensa ante ataques comunes, orientado a la formación de analistas de ciberseguridad.",
-      autores: ["1006890123", "1009345678"]
-    },
-    %{
-      fecha: "2025-05-01",
-      titulo: "Red neuronal para detección temprana de fallas en sistemas eléctricos industriales",
-      descripcion: "Utiliza modelos de deep learning para detectar anomalías en señales eléctricas y anticipar fallas industriales.",
-      autores: ["1004678901", "1007901234"]
-    },
-    %{
-      fecha: "2025-06-22",
-      titulo: "Chatbot inteligente para atención al cliente usando procesamiento de lenguaje natural",
-      descripcion: "Desarrolla un chatbot entrenado con datos de soporte técnico, capaz de atender múltiples usuarios en paralelo usando concurrencia.",
-      autores: ["1002456789", "1008123456", "1005789012"]
-    },
-    %{
-      fecha: "2025-07-10",
-      titulo: "Sistema de detección de intrusiones en redes mediante aprendizaje automático",
-      descripcion: "Desarrolla un IDS basado en aprendizaje supervisado para detectar patrones anómalos en tráfico de red.",
-      autores: ["1009345678","1003567890"]
-    }
-  ]
+  @servicio_remoto {:servicio_cadenas, @nodo_remoto}
 
   def main() do
-    Util.mostrar_mensaje("PROCESO PRINCIPAL")
+    Util.mostrar_mensaje("PROCESO Secundario (Cliente iniciado)")
+    Process.register(self(), @nombre_servicio_local)
 
-    @nombre_servicio_local
-    |> registrar_servicio()
-
-    establecer_conexion(@nodo_remoto)
-    |> iniciar_produccion()
+    case Node.connect(@nodo_remoto) do
+      true ->
+        Util.mostrar_mensaje("Conectado al nodo servidor")
+        solicitar_lista_trabajos()
+      false ->
+        Util.mostrar_error("No se pudo conectar con el nodo servidor ")
+    end
   end
 
-  defp registrar_servicio(nombre_servicio_local),
-    do: Process.register(self(), nombre_servicio_local)
+  defp solicitar_lista_trabajos() do
+    send(@servicio_remoto, {self(), :listar_trabajos})
 
-  defp establecer_conexion(nodo_remoto) do
-    Node.connect(nodo_remoto)
-  end
-
-  defp iniciar_produccion(false),
-    do: Util.mostrar_error("No se pudo conectar con el nodo servidor")
-
-  defp iniciar_produccion(true) do
-    enviar_mensajes()
-    recibir_respuestas()
-  end
-
-  defp enviar_mensajes() do
-    Enum.each(@trabajos, &enviar_mensaje/1)
-  end
-
-  defp enviar_mensaje(mensaje) do
-    send(@servicio_remoto, {@servicio_local, mensaje})
-  end
-
-  defp recibir_respuestas() do
     receive do
-      :fin ->
-        :ok
+      {:trabajos, lista} ->
+        IO.puts("\nLISTA DE TRABAJOS DE GRADO:")
+        Enum.with_index(lista, 1)
+        |> Enum.each(fn {trabajo, i} ->
+          IO.puts("#{i}. #{trabajo.titulo} (#{trabajo.fecha})")
+        end)
 
-      respuesta ->
-        Util.mostrar_mensaje("\t -> \"#{respuesta}\"")
-        recibir_respuestas()
+        IO.puts("\nSeleccione un trabajo por número: ")
+        indice = IO.gets("> ") |> String.trim() |> String.to_integer()
+
+        case Enum.at(lista, indice - 1) do
+          nil -> Util.mostrar_error("Número inválido")
+          trabajo -> solicitar_autores(trabajo.titulo)
+        end
+    end
+  end
+
+  defp solicitar_autores(titulo) do
+    send(@servicio_remoto, {self(), {:autores, titulo}})
+
+    receive do
+      {:autores, lista_autores} ->
+        IO.puts("\nAUTORES DEL TRABAJO '#{titulo}':")
+        Enum.each(lista_autores, fn a ->
+          IO.puts("- #{a.nombre} #{a.apellidos} | #{a.programa} | #{a.titulo}")
+        end)
+
+      {:error, msg} ->
+        Util.mostrar_error(msg)
     end
   end
 end
