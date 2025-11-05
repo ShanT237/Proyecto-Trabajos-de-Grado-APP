@@ -146,10 +146,12 @@ defmodule NodoServidor do
   defp loop() do
     receive do
       {pid_cliente, :listar_trabajos} ->
+        IO.puts("cliente conectado")
         send(pid_cliente, {:trabajos, @trabajos})
         loop()
 
       {pid_cliente, {:autores, titulo}} ->
+        IO.puts("Enviando respuesta")
         trabajo = Enum.find(@trabajos, &(&1.titulo == titulo))
         if trabajo do
           autores = Enum.filter(@autores, &(&1.cedula in trabajo.autores))
