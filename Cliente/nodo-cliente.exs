@@ -1,6 +1,6 @@
 defmodule NodoCliente do
   @nombre_servicio_local :servicio_respuesta
-  @nodo_remoto :"nodoservidor@25.49.128.123"
+  @nodo_remoto :"nodoservidor@25.1.4.245"
   @servicio_remoto {:servicio_cadenas, @nodo_remoto}
 
   def main() do
