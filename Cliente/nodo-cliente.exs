@@ -1,15 +1,15 @@
 defmodule NodoCliente do
   @nombre_servicio_local :servicio_respuesta
-  @nodo_remoto :"nodoservidor@schwarz"
+  @nodo_remoto :"nodoservidor@25.49.128.123"
   @servicio_remoto {:servicio_cadenas, @nodo_remoto}
 
   def main() do
-    Util.mostrar_mensaje("PROCESO Secundario (Cliente iniciado)")
+    Util.mostrar_mensaje_java("PROCESO Secundario (Cliente iniciado)")
     Process.register(self(), @nombre_servicio_local)
 
     case Node.connect(@nodo_remoto) do
       true ->
-        Util.mostrar_mensaje("Conectado al nodo servidor")
+        Util.mostrar_mensaje_java("Conectado al nodo servidor")
         solicitar_lista_trabajos()
       false ->
         Util.mostrar_error("No se pudo conectar con el nodo servidor ")
@@ -21,14 +21,13 @@ defmodule NodoCliente do
 
     receive do
       {:trabajos, lista} ->
-        IO.puts("\nLISTA DE TRABAJOS DE GRADO:")
-        Enum.with_index(lista, 1)
-        |> Enum.each(fn {trabajo, i} ->
-          IO.puts("#{i}. #{trabajo.titulo} (#{trabajo.fecha})")
-        end)
-
-        IO.puts("\nSeleccione un trabajo por número: ")
-        indice = IO.gets("> ") |> String.trim() |> String.to_integer()
+        cadena_trabajos =
+          Enum.with_index(lista, 1)
+          |> Enum.map(fn {trabajo, i} ->
+            "#{i}. #{trabajo.titulo} (#{trabajo.fecha})"
+          end)
+          |> Enum.join("\n")
+        indice = Util.ingresar("\nLISTA DE TRABAJOS DE GRADO: \n #{cadena_trabajos}\nSeleccione un trabajo por número: ", length(lista), :spiner)
 
         case Enum.at(lista, indice - 1) do
           nil -> Util.mostrar_error("Número inválido")
@@ -42,10 +41,12 @@ defmodule NodoCliente do
 
     receive do
       {:autores, lista_autores} ->
-        IO.puts("\nAUTORES DEL TRABAJO '#{titulo}':")
-        Enum.each(lista_autores, fn a ->
-          IO.puts("- #{a.nombre} #{a.apellidos} | #{a.programa} | #{a.titulo}")
+        cadena_autores =
+        Enum.map(lista_autores, fn a ->
+          "- #{a.nombre} #{a.apellidos} | #{a.programa} | #{a.titulo}"
         end)
+        |> Enum.join("\n")
+        Util.mostrar_mensaje_java("\nAUTORES DEL TRABAJO '#{titulo}': \n#{cadena_autores}")
 
       {:error, msg} ->
         Util.mostrar_error(msg)
